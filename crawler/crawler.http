@@ -1,0 +1,6 @@
+@crawler_HostAddress = http://localhost:5204
+
+GET {{crawler_HostAddress}}/api/Crawl/search?keyword=標的&board=Stock&days=2
+Accept: application/json
+
+###
