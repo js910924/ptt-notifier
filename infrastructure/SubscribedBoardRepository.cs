@@ -4,6 +4,7 @@ namespace infrastructure;
 
 public class SubscribedBoardRepository : ISubscribedBoardRepository
 {
+    // TODO: integrate supabase
     private readonly HashSet<SubscribedBoard> _subscriptions = new(SubscribedBoard.SubscribedBoardComparer);
 
     public List<SubscribedBoard> GetAll()
