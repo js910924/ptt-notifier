@@ -1,3 +1,5 @@
+using infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +8,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
 builder.Services.AddHttpClient();
 builder.Services.AddSwaggerGen();
+
+// custom services
+builder.Services.AddTransient<IPttClient, PttClient>();
 
 var app = builder.Build();
 

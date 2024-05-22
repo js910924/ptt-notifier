@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <AssemblyName>api</AssemblyName>
+        <RootNamespace>api</RootNamespace>
+        <PackageId>api</PackageId>
+        <Authors>api</Authors>
+        <Company>api</Company>
+        <Product>api</Product>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.5"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+        <PackageReference Include="Telegram.Bot" Version="20.0.0-alpha.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\infrastructure\infrastructure.csproj" />
+    </ItemGroup>
+
+</Project>

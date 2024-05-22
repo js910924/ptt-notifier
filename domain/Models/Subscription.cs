@@ -1,10 +1,10 @@
-namespace user.Models;
+namespace domain.Models;
 
-public class UserSubscription
+public class Subscription
 {
-    private sealed class UserIdBoardKeywordEqualityComparer : IEqualityComparer<UserSubscription>
+    private sealed class UserIdBoardKeywordEqualityComparer : IEqualityComparer<Subscription>
     {
-        public bool Equals(UserSubscription x, UserSubscription y)
+        public bool Equals(Subscription x, Subscription y)
         {
             if (ReferenceEquals(x, y)) return true;
             if (ReferenceEquals(x, null)) return false;
@@ -13,13 +13,13 @@ public class UserSubscription
             return x.UserId == y.UserId && x.Board == y.Board && x.Keyword == y.Keyword;
         }
 
-        public int GetHashCode(UserSubscription obj)
+        public int GetHashCode(Subscription obj)
         {
             return HashCode.Combine(obj.UserId, obj.Board, obj.Keyword);
         }
     }
 
-    public static IEqualityComparer<UserSubscription> UserIdBoardKeywordComparer { get; } = new UserIdBoardKeywordEqualityComparer();
+    public static IEqualityComparer<Subscription> UserIdBoardKeywordComparer { get; } = new UserIdBoardKeywordEqualityComparer();
 
     public int UserId { get; set; }
     public string Board { get; set; }
