@@ -9,21 +9,29 @@ namespace api.Controllers;
 [Route("api/[controller]/[action]")]
 public class SubscriptionController : Controller
 {
-    private readonly SubscriptionRepository _subscriptionRepository;
+    private readonly ISubscriptionRepository _subscriptionRepository;
     private readonly ISubscribedBoardRepository _subscribedBoardRepository;
 
-    public SubscriptionController(SubscriptionRepository subscriptionRepository, ISubscribedBoardRepository subscribedBoardRepository)
+    public SubscriptionController(ISubscriptionRepository subscriptionRepository, ISubscribedBoardRepository subscribedBoardRepository)
     {
         _subscriptionRepository = subscriptionRepository;
         _subscribedBoardRepository = subscribedBoardRepository;
     }
 
     [HttpPost]
-    public List<Subscription> Subscribe(SubscribeRequest request)
+    public async Task<List<Subscription>> Subscribe(SubscribeRequest request)
     {
-        _subscriptionRepository.Add(request.UserId, request.Board, request.Keyword);
+        await _subscriptionRepository.Add(request.UserId, request.Board, request.Keyword);
         _subscribedBoardRepository.Add(request.Board);
 
-        return _subscriptionRepository.GetAll();
+        return await _subscriptionRepository.GetAll();
+    }
+
+    [HttpDelete]
+    public async Task<OkResult> Unsubscribe(SubscribeRequest request)
+    {
+        await _subscriptionRepository.Delete(request.UserId, request.Board, request.Keyword);
+
+        return Ok();
     }
 }

@@ -1,33 +1,48 @@
 using domain.Models;
+using Supabase;
 
 namespace infrastructure;
 
-public class SubscriptionRepository
+public class SubscriptionRepository : ISubscriptionRepository
 {
-    private readonly HashSet<Subscription> _subscriptions = new(Subscription.UserIdBoardKeywordComparer);
+    private readonly Client _client;
 
-    public List<Subscription> GetAll()
+    public SubscriptionRepository(Client client)
     {
-        return _subscriptions.ToList();
+        _client = client;
     }
 
-    public void Add(int userId, string board, string keyword)
+    public async Task<List<Subscription>> GetAll()
     {
-        _subscriptions.Add(new Subscription
+        var result = await _client.From<infrastructure.Models.Subscription>().Get();
+
+        return result.Models.Select(model => new Subscription
         {
-            UserId = userId,
-            Board = board,
-            Keyword = keyword
-        });
+            UserId = model.UserId,
+            Board = model.Board,
+            Keyword = model.Keyword,
+        }).ToList();
     }
 
-    public void Remove(int userId, string board, string keyword)
+    public async Task Add(int userId, string board, string keyword)
     {
-        _subscriptions.Remove(new Subscription
-        {
-            UserId = userId,
-            Board = board,
-            Keyword = keyword
-        });
+        _ = await _client.From<infrastructure.Models.Subscription>()
+            .Upsert(new infrastructure.Models.Subscription
+            {
+                UserId = userId,
+                Board = board,
+                Keyword = keyword
+            });
+    }
+
+    public async Task Delete(int userId, string board, string keyword)
+    {
+        await _client.From<infrastructure.Models.Subscription>()
+            .Delete(new infrastructure.Models.Subscription
+            {
+                UserId = userId,
+                Board = board,
+                Keyword = keyword
+            });
     }
 }
