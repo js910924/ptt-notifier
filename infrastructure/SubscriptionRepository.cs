@@ -24,7 +24,7 @@ public class SubscriptionRepository : ISubscriptionRepository
         }).ToList();
     }
 
-    public async Task Add(int userId, string board, string keyword)
+    public async Task Add(long userId, string board, string keyword)
     {
         _ = await _client.From<Subscription>()
             .Upsert(new Subscription

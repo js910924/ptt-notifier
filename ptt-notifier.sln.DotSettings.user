@@ -1,0 +1,18 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=0a8daa10_002Dda99_002D4268_002Db168_002D1201f95e87bb/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="fetch_articles_according_to_subscribed_board" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::2B13DEB2-1C92-47F9-B0CC-5B1641B19F56::net8.0::fetch_latest_articles_worker.UnitTests.FetchLatestArticlesServiceTests.fetch_articles_according_to_subscribed_boards&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::2B13DEB2-1C92-47F9-B0CC-5B1641B19F56::net8.0::fetch_latest_articles_worker.UnitTests.FetchLatestArticlesServiceTests.wont_get_articles_when_no_latest_articles&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::2B13DEB2-1C92-47F9-B0CC-5B1641B19F56::net8.0::fetch_latest_articles_worker.UnitTests.FetchLatestArticlesServiceTests.get_latest_articles_according_to_subscribed_board_last_latest_article_title&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=59873e11_002De194_002D41e1_002Db723_002D78c5ee741d38/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="fetch_articles_according_to_subscribed_board #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::2B13DEB2-1C92-47F9-B0CC-5B1641B19F56::net8.0::fetch_latest_articles_worker.UnitTests.FetchLatestArticlesServiceTests.fetch_articles_according_to_subscribed_board&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=abb411be_002D47c2_002D42da_002D89cb_002D82f84729c06f/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="get_latest_articles_according_to_subscribed_board_last_latest_article_title" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::2B13DEB2-1C92-47F9-B0CC-5B1641B19F56::net8.0::fetch_latest_articles_worker.UnitTests.FetchLatestArticlesServiceTests&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

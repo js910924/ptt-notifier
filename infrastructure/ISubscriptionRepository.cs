@@ -5,6 +5,6 @@ namespace infrastructure;
 public interface ISubscriptionRepository
 {
     Task<List<Subscription>> GetAll();
-    Task Add(int userId, string board, string keyword);
+    Task Add(long userId, string board, string keyword);
     Task Delete(int userId, string board, string keyword);
 }

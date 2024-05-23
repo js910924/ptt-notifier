@@ -7,7 +7,7 @@ namespace infrastructure.Models;
 public class Subscription : BaseModel
 {
     [PrimaryKey("user_id")]
-    public int UserId { get; set; }
+    public long UserId { get; set; }
 
     [PrimaryKey("board")]
     public string Board { get; set; }
