@@ -22,7 +22,11 @@ public class SubscriptionController : Controller
     public async Task<List<Subscription>> Subscribe(SubscribeRequest request)
     {
         await _subscriptionRepository.Add(request.UserId, request.Board, request.Keyword);
-        _subscribedBoardRepository.Add(request.Board);
+        var subscribedBoards = await _subscribedBoardRepository.GetAll();
+        if (!subscribedBoards.Exists(board => board.Board == request.Board))
+        {
+            await _subscribedBoardRepository.Add(request.Board);
+        }
 
         return await _subscriptionRepository.GetAll();
     }
@@ -31,6 +35,11 @@ public class SubscriptionController : Controller
     public async Task<OkResult> Unsubscribe(SubscribeRequest request)
     {
         await _subscriptionRepository.Delete(request.UserId, request.Board, request.Keyword);
+        var subscriptions = await _subscriptionRepository.GetAll();
+        if (subscriptions.All(subscription => subscription.Board != request.Board))
+        {
+            await _subscribedBoardRepository.Delete(request.Board);
+        }
 
         return Ok();
     }

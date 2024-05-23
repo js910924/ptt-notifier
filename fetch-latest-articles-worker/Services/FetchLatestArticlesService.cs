@@ -16,7 +16,7 @@ public class FetchLatestArticlesService
 
     public async Task<List<Article>> Fetch()
     {
-        var subscribedBoards = _subscribedBoardRepository.GetAll();
+        var subscribedBoards = await _subscribedBoardRepository.GetAll();
         var totalArticles = new List<Article>();
         foreach (var subscribedBoard in subscribedBoards)
         {
@@ -27,13 +27,13 @@ public class FetchLatestArticlesService
                 var lastLatestArticleIndex = todayArticles.FindLastIndex(article => article.Title == subscribedBoard.LastLatestArticleTitle);
                 if (lastLatestArticleIndex == -1)
                 {
-                    _subscribedBoardRepository.UpdateLatestArticle(subscribedBoard.Board, todayArticles.Last().Title);
+                    await _subscribedBoardRepository.UpdateLatestArticle(subscribedBoard.Board, todayArticles.Last().Title);
                     totalArticles.AddRange(todayArticles);
                 }
                 else
                 {
                     var latestArticles = todayArticles.GetRange(lastLatestArticleIndex + 1, todayArticles.Count - lastLatestArticleIndex - 1);
-                    _subscribedBoardRepository.UpdateLatestArticle(subscribedBoard.Board, latestArticles.Last().Title);
+                    await _subscribedBoardRepository.UpdateLatestArticle(subscribedBoard.Board, latestArticles.Last().Title);
                     totalArticles.AddRange(latestArticles);
                 }
             }

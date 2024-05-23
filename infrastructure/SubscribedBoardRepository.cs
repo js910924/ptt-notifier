@@ -1,46 +1,51 @@
-using domain.Models;
+using infrastructure.Models;
+using Supabase;
 
-namespace infrastructure;
-
-public class SubscribedBoardRepository : ISubscribedBoardRepository
+namespace infrastructure
 {
-    // TODO: integrate supabase
-    private readonly HashSet<SubscribedBoard> _subscriptions = new(SubscribedBoard.SubscribedBoardComparer);
-
-    public List<SubscribedBoard> GetAll()
+    public class SubscribedBoardRepository : ISubscribedBoardRepository
     {
-        return _subscriptions.ToList();
-    }
+        private readonly Client _client;
 
-    public void Add(string board)
-    {
-        if (_subscriptions.Any(subscription => subscription.Board.Equals(board, StringComparison.OrdinalIgnoreCase)))
+        public SubscribedBoardRepository(Client client)
         {
-            return;
+            _client = client;
         }
 
-        _subscriptions.Add(new SubscribedBoard
+        public async Task<List<domain.Models.SubscribedBoard>> GetAll()
         {
-            Board = board,
-        });
-    }
-
-    public void Remove(string board)
-    {
-        _subscriptions.Remove(new SubscribedBoard
-        {
-            Board = board,
-        });
-    }
-
-    public void UpdateLatestArticle(string board, string articleTitle)
-    {
-        var subscribedBoard = _subscriptions.SingleOrDefault(subscribedBoard => subscribedBoard.Board.Equals(board, StringComparison.OrdinalIgnoreCase));
-        if (subscribedBoard == null)
-        {
-            return;
+            return (await _client.From<SubscribedBoard>().Get()).Models
+                .Select(board => new domain.Models.SubscribedBoard
+                {
+                    Board = board.Board,
+                    LastLatestArticleTitle = board.LastLatestArticleTitle,
+                }).ToList();
         }
 
-        subscribedBoard.LastLatestArticleTitle = articleTitle;
+        public async Task Add(string board)
+        {
+            _ = await _client.From<SubscribedBoard>()
+                .Upsert(new SubscribedBoard
+                {
+                    Board = board
+                });
+        }
+
+        public async Task Delete(string board)
+        {
+            _ = await _client.From<SubscribedBoard>()
+                .Delete(new SubscribedBoard
+                {
+                    Board = board
+                });
+        }
+
+        public async Task UpdateLatestArticle(string board, string articleTitle)
+        {
+            _ = await _client.From<SubscribedBoard>()
+                .Where(x => x.Board == board)
+                .Set(x => x.LastLatestArticleTitle, articleTitle)
+                .Update();
+        }
     }
 }

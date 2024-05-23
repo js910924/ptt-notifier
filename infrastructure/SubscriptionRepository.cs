@@ -1,4 +1,4 @@
-using domain.Models;
+using infrastructure.Models;
 using Supabase;
 
 namespace infrastructure;
@@ -12,11 +12,11 @@ public class SubscriptionRepository : ISubscriptionRepository
         _client = client;
     }
 
-    public async Task<List<Subscription>> GetAll()
+    public async Task<List<domain.Models.Subscription>> GetAll()
     {
-        var result = await _client.From<infrastructure.Models.Subscription>().Get();
+        var result = await _client.From<Subscription>().Get();
 
-        return result.Models.Select(model => new Subscription
+        return result.Models.Select(model => new domain.Models.Subscription
         {
             UserId = model.UserId,
             Board = model.Board,
@@ -26,8 +26,8 @@ public class SubscriptionRepository : ISubscriptionRepository
 
     public async Task Add(int userId, string board, string keyword)
     {
-        _ = await _client.From<infrastructure.Models.Subscription>()
-            .Upsert(new infrastructure.Models.Subscription
+        _ = await _client.From<Subscription>()
+            .Upsert(new Subscription
             {
                 UserId = userId,
                 Board = board,
@@ -37,8 +37,8 @@ public class SubscriptionRepository : ISubscriptionRepository
 
     public async Task Delete(int userId, string board, string keyword)
     {
-        await _client.From<infrastructure.Models.Subscription>()
-            .Delete(new infrastructure.Models.Subscription
+        await _client.From<Subscription>()
+            .Delete(new Subscription
             {
                 UserId = userId,
                 Board = board,
