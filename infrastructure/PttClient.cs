@@ -66,6 +66,7 @@ public class PttClient : IPttClient
                         continue;
                     }
                     var title = titleNode.InnerText.Trim();
+                    // TODO: Stock daily 閒聊 article will cause latest article won't update
                     if (title.Contains("公告") || title.Contains("刪除"))
                     {
                         continue;
