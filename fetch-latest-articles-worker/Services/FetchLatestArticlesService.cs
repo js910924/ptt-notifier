@@ -14,31 +14,23 @@ public class FetchLatestArticlesService
         _pttClient = pttClient;
     }
 
-    public async Task<List<Article>> Fetch()
+    public async Task<List<Article>> Fetch(SubscribedBoard board)
     {
-        var subscribedBoards = await _subscribedBoardRepository.GetAll();
-        var totalArticles = new List<Article>();
-        foreach (var subscribedBoard in subscribedBoards)
+        var todayArticles = await _pttClient.SearchPttArticlesAsync(board.Board, 0);
+        if (todayArticles.Count > 0 && todayArticles.LastOrDefault()?.Title != board.LastLatestArticleTitle)
         {
-            Console.WriteLine("LastLatestTitle: " + subscribedBoard.LastLatestArticleTitle);
-            var todayArticles = await _pttClient.SearchPttArticlesAsync(subscribedBoard.Board, 0);
-            if (todayArticles.Count > 0 && todayArticles.LastOrDefault()?.Title != subscribedBoard.LastLatestArticleTitle)
+            var lastLatestArticleIndex = todayArticles.FindLastIndex(article => article.Title == board.LastLatestArticleTitle);
+            if (lastLatestArticleIndex == -1)
             {
-                var lastLatestArticleIndex = todayArticles.FindLastIndex(article => article.Title == subscribedBoard.LastLatestArticleTitle);
-                if (lastLatestArticleIndex == -1)
-                {
-                    await _subscribedBoardRepository.UpdateLatestArticle(subscribedBoard.Board, todayArticles.Last().Title);
-                    totalArticles.AddRange(todayArticles);
-                }
-                else
-                {
-                    var latestArticles = todayArticles.GetRange(lastLatestArticleIndex + 1, todayArticles.Count - lastLatestArticleIndex - 1);
-                    await _subscribedBoardRepository.UpdateLatestArticle(subscribedBoard.Board, latestArticles.Last().Title);
-                    totalArticles.AddRange(latestArticles);
-                }
+                await _subscribedBoardRepository.UpdateLatestArticle(board.Board, todayArticles.Last().Title);
+                return todayArticles;
             }
+
+            var latestArticles = todayArticles.GetRange(lastLatestArticleIndex + 1, todayArticles.Count - lastLatestArticleIndex - 1);
+            await _subscribedBoardRepository.UpdateLatestArticle(board.Board, latestArticles.Last().Title);
+            return latestArticles;
         }
 
-        return totalArticles;
+        return [];
     }
 }

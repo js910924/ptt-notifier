@@ -23,14 +23,13 @@ public class FetchLatestArticlesServiceTests
     [Test]
     public async Task wont_get_articles_when_latest_article_is_last_latest_article()
     {
-        GivenSubscribedBoards(new SubscribedBoard { Board = "Stock", LastLatestArticleTitle = "title 3" });
         GivenArticles(
             new Article { Board = "Stock", Title = "title 1" },
             new Article { Board = "Stock", Title = "title 2" },
             new Article { Board = "Stock", Title = "title 3" }
         );
 
-        var articles = await _sut.Fetch();
+        var articles = await _sut.Fetch(new SubscribedBoard { Board = "Stock", LastLatestArticleTitle = "title 3"});
 
         Assert.That(new List<Article>(), Is.EqualTo(articles));
     }
@@ -38,10 +37,9 @@ public class FetchLatestArticlesServiceTests
     [Test]
     public async Task wont_get_articles_when_no_articles()
     {
-        GivenSubscribedBoards(new SubscribedBoard { Board = "Stock", LastLatestArticleTitle = "title 3" });
         GivenArticles();
 
-        var articles = await _sut.Fetch();
+        var articles = await _sut.Fetch(new SubscribedBoard { Board = "Stock", LastLatestArticleTitle = "title 3" });
 
         Assert.That(new List<Article>(), Is.EqualTo(articles));
     }
@@ -49,14 +47,13 @@ public class FetchLatestArticlesServiceTests
     [Test]
     public async Task get_latest_articles_according_to_subscribed_board_last_latest_article_title()
     {
-        GivenSubscribedBoards(new SubscribedBoard { Board = "Stock", LastLatestArticleTitle = "title 2" });
         GivenArticles(
             new Article { Board = "Stock", Title = "title 1" },
             new Article { Board = "Stock", Title = "title 2" },
             new Article { Board = "Stock", Title = "title 3" }
         );
 
-        var articles = await _sut.Fetch();
+        var articles = await _sut.Fetch(new SubscribedBoard { Board = "Stock", LastLatestArticleTitle = "title 2" });
 
         Assert.That(new List<Article>
         {
@@ -67,14 +64,13 @@ public class FetchLatestArticlesServiceTests
     [Test]
     public async Task get_all_today_articles_when_subscribed_board_last_latest_articles_title_not_in_today_articles()
     {
-        GivenSubscribedBoards(new SubscribedBoard { Board = "Stock", LastLatestArticleTitle = "title X" });
         GivenArticles(
             new Article { Board = "Stock", Title = "title 1" },
             new Article { Board = "Stock", Title = "title 2" },
             new Article { Board = "Stock", Title = "title 3" }
         );
 
-        var articles = await _sut.Fetch();
+        var articles = await _sut.Fetch(new SubscribedBoard { Board = "Stock", LastLatestArticleTitle = "title X" });
 
         Assert.That(new List<Article>
         {

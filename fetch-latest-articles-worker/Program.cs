@@ -3,7 +3,6 @@ using fetch_latest_articles_worker.Services;
 using infrastructure;
 using infrastructure.Configs;
 using infrastructure.Extensions;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Supabase;
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -22,7 +21,8 @@ builder.Services.AddSupabase(supabaseConfig.Url, supabaseConfig.Key, new Supabas
 });
 
 builder.Services.AddTransient<FetchLatestArticlesService>();
-builder.Services.TryAddSingleton<ISubscribedBoardRepository, SubscribedBoardRepository>();
+builder.Services.AddTransient<ISubscribedBoardRepository, SubscribedBoardRepository>();
+builder.Services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
 builder.Services.AddTransient<IPttClient, PttClient>();
 
 var host = builder.Build();
