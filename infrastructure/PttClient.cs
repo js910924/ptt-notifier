@@ -6,6 +6,7 @@ namespace infrastructure;
 
 public class PttClient : IPttClient
 {
+    private const string PttUrl = "https://www.ptt.cc";
     private readonly HttpClient _httpClient;
 
     public PttClient(HttpClient httpClient)
@@ -16,7 +17,7 @@ public class PttClient : IPttClient
     public async Task<List<Article>> SearchPttArticlesAsync(string board, int days)
     {
         var startDate = DateTime.Today.AddDays(-days).Date;
-        var url = $"https://www.ptt.cc/bbs/{board}/index.html";
+        var url = $"{PttUrl}/bbs/{board}/index.html";
 
         var articles = new List<Article>();
 
@@ -37,7 +38,7 @@ public class PttClient : IPttClient
             var nextPageButton = doc.DocumentNode.SelectSingleNode("//div[@class='btn-group btn-group-paging']/a[contains(text(), '上頁')]");
             if (nextPageButton != null && articlesInPage.TrueForAll(a => a.Date >= startDate))
             {
-                url = "https://www.ptt.cc" + nextPageButton.GetAttributeValue("href", "");
+                url = PttUrl + nextPageButton.GetAttributeValue("href", "");
             }
             else
             {
@@ -79,7 +80,7 @@ public class PttClient : IPttClient
                     continue;
                 }
 
-                var link = "https://www.ptt.cc" + titleNode.GetAttributeValue("href", "");
+                var link = PttUrl + titleNode.GetAttributeValue("href", "");
                 var author = row.SelectSingleNode(".//div[@class='author']").InnerText.Trim();
                 var dateStr = "2024/" + row.SelectSingleNode(".//div[@class='date']").InnerText.Trim();
                 var date = DateTime.ParseExact(dateStr, "yyyy/M/d", CultureInfo.InvariantCulture).Date;
