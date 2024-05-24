@@ -14,6 +14,7 @@ builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.Environment
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpClient();
 builder.Services.AddControllers();
 
 var supabaseConfig = builder.Configuration.GetSection("SupabaseConfig").Get<SupabaseConfig>();
@@ -29,8 +30,8 @@ builder.Services.AddSingleton<ITelegramBotClient>(_ =>
 });
 
 // custom services
-builder.Services.TryAddSingleton<ISubscriptionRepository, SubscriptionRepository>();
-builder.Services.TryAddSingleton<ISubscribedBoardRepository, SubscribedBoardRepository>();
+builder.Services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
+builder.Services.AddTransient<ISubscribedBoardRepository, SubscribedBoardRepository>();
 builder.Services.AddTransient<IPttClient, PttClient>();
 
 var app = builder.Build();
