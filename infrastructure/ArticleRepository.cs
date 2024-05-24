@@ -1,5 +1,4 @@
 using infrastructure.Models;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.Interfaces;
 using Supabase;
 
 namespace infrastructure;
