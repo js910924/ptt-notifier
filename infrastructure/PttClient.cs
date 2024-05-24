@@ -50,47 +50,53 @@ public class PttClient : IPttClient
     
     private static List<Article> GetArticlesInPage(HtmlDocument doc, string board)
     {
-        var articlesInPage = new List<Article>();
 
-        // TODO: bypass 18+ validation
-        var rows = doc.DocumentNode.SelectNodes("//div[@class='r-ent']");
-        if (rows != null)
+        var rListContainer = doc.DocumentNode.SelectSingleNode("//div[contains(@class, 'r-list-container')]");
+        if (rListContainer == null)
         {
-            foreach (var row in rows)
+            // can't find page
+            return [];
+        }
+        var rListSep = rListContainer.SelectSingleNode(".//div[@class='r-list-sep']");
+        
+        var articlesInPage = new List<Article>();
+        // TODO: bypass 18+ validation
+        var rows = rListContainer.SelectNodes(".//div[@class='r-ent']")
+            .Where(e => e.Line < rListSep.Line)
+            .ToList();
+        foreach (var row in rows)
+        {
+            try
             {
-                try
+                var titleNode = row.SelectSingleNode(".//div[@class='title']/a");
+                if (titleNode == null)
                 {
-                    var titleNode = row.SelectSingleNode(".//div[@class='title']/a");
-                    if (titleNode == null)
-                    {
-                        continue;
-                    }
-                    var title = titleNode.InnerText.Trim();
-                    // TODO: Stock daily 閒聊 article will cause latest article won't update
-                    if (title.Contains("公告") || title.Contains("刪除"))
-                    {
-                        continue;
-                    }
-
-                    var link = "https://www.ptt.cc" + titleNode.GetAttributeValue("href", "");
-                    var author = row.SelectSingleNode(".//div[@class='author']").InnerText.Trim();
-                    var dateStr = "2024/" + row.SelectSingleNode(".//div[@class='date']").InnerText.Trim();
-                    var date = DateTime.ParseExact(dateStr, "yyyy/M/d", CultureInfo.InvariantCulture).Date;
-
-                    articlesInPage.Add(new Article
-                    {
-                        Board = board,
-                        Title = title,
-                        Link = link,
-                        Date = date,
-                        Author = author
-                    });
+                    continue;
                 }
-                catch (Exception ex)
+                var title = titleNode.InnerText.Trim();
+                if (title.Contains("刪除"))
                 {
-                    Console.WriteLine(ex);
-                    // Skip any articles that can't be parsed
+                    continue;
                 }
+
+                var link = "https://www.ptt.cc" + titleNode.GetAttributeValue("href", "");
+                var author = row.SelectSingleNode(".//div[@class='author']").InnerText.Trim();
+                var dateStr = "2024/" + row.SelectSingleNode(".//div[@class='date']").InnerText.Trim();
+                var date = DateTime.ParseExact(dateStr, "yyyy/M/d", CultureInfo.InvariantCulture).Date;
+
+                articlesInPage.Add(new Article
+                {
+                    Board = board,
+                    Title = title,
+                    Link = link,
+                    Date = date,
+                    Author = author
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                // Skip any articles that can't be parsed
             }
         }
         return articlesInPage;
