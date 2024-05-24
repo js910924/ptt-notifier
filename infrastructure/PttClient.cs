@@ -1,12 +1,12 @@
-using System.Globalization;
-using domain.Models;
 using HtmlAgilityPack;
+using infrastructure.Models;
+using Article = domain.Models.Article;
 
 namespace infrastructure;
 
 public class PttClient : IPttClient
 {
-    private const string PttUrl = "https://www.ptt.cc";
+    public const string PttUrl = "https://www.ptt.cc";
     private readonly HttpClient _httpClient;
 
     public PttClient(HttpClient httpClient)
@@ -23,7 +23,7 @@ public class PttClient : IPttClient
 
         while (true)
         {
-            var (previousPageUrl, articlesInPage) = await GetArticlesInPage2(board, url);
+            var (previousPageUrl, articlesInPage) = await GetArticlesInPage(board, url);
 
             articles = articlesInPage.Where(article => article.Date >= startDate).Concat(articles).ToList();
 
@@ -40,7 +40,7 @@ public class PttClient : IPttClient
         return articles;
     }
 
-    private async Task<(string previousPageUrl, List<Article> articlesInPage)> GetArticlesInPage2(string board, string url)
+    private async Task<(string previousPageUrl, List<Article> articlesInPage)> GetArticlesInPage(string board, string url)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, url);
         request.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
@@ -51,63 +51,9 @@ public class PttClient : IPttClient
         var doc = new HtmlDocument();
         doc.LoadHtml(responseContent);
 
-        var articlesInPage = GetArticlesInPage(doc, board);
+        var articlesInPage = new PttPageHtmlDocument(doc, board).GetArticlesInPage();
         var nextPageButton = doc.DocumentNode.SelectSingleNode("//div[@class='btn-group btn-group-paging']/a[contains(text(), '上頁')]");
         var previousPageUrl = PttUrl + nextPageButton.GetAttributeValue("href", "");
         return (previousPageUrl, articlesInPage);
-    }
-
-    private static List<Article> GetArticlesInPage(HtmlDocument doc, string board)
-    {
-
-        var rListContainer = doc.DocumentNode.SelectSingleNode("//div[contains(@class, 'r-list-container')]");
-        if (rListContainer == null)
-        {
-            // can't find page
-            return [];
-        }
-        var rListSep = rListContainer.SelectSingleNode(".//div[@class='r-list-sep']");
-        
-        var articlesInPage = new List<Article>();
-        var rows = rListContainer.SelectNodes(".//div[@class='r-ent']")
-            .Where(e => rListSep == null || e.Line < rListSep.Line)
-            .ToList();
-        foreach (var row in rows)
-        {
-            try
-            {
-                var titleNode = row.SelectSingleNode(".//div[@class='title']/a");
-                if (titleNode == null)
-                {
-                    continue;
-                }
-                var title = titleNode.InnerText.Trim();
-                if (title.Contains("刪除"))
-                {
-                    continue;
-                }
-
-                var link = PttUrl + titleNode.GetAttributeValue("href", "");
-                var author = row.SelectSingleNode(".//div[@class='author']").InnerText.Trim();
-                // TODO: remove hard code 2024
-                var dateStr = "2024/" + row.SelectSingleNode(".//div[@class='date']").InnerText.Trim();
-                var date = DateTime.ParseExact(dateStr, "yyyy/M/d", CultureInfo.InvariantCulture).Date;
-
-                articlesInPage.Add(new Article
-                {
-                    Board = board,
-                    Title = title,
-                    Link = link,
-                    Date = date,
-                    Author = author
-                });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                // Skip any articles that can't be parsed
-            }
-        }
-        return articlesInPage;
     }
 }
