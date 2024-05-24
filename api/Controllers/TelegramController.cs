@@ -28,7 +28,7 @@ public class TelegramController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> TelegramWebhook()
+    public async Task<IActionResult> Webhook()
     {
         // TODO: not sure why use Update as parameter will get 400 Bad Request
         using StreamReader reader = new(Request.Body);
