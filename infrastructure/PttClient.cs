@@ -82,6 +82,7 @@ public class PttClient : IPttClient
 
                 var link = PttUrl + titleNode.GetAttributeValue("href", "");
                 var author = row.SelectSingleNode(".//div[@class='author']").InnerText.Trim();
+                // TODO: remove hard code 2024
                 var dateStr = "2024/" + row.SelectSingleNode(".//div[@class='date']").InnerText.Trim();
                 var date = DateTime.ParseExact(dateStr, "yyyy/M/d", CultureInfo.InvariantCulture).Date;
 
