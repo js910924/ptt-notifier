@@ -35,7 +35,7 @@ public class SubscriptionRepository : ISubscriptionRepository
             });
     }
 
-    public async Task Delete(int userId, string board, string keyword)
+    public async Task Delete(long userId, string board, string keyword)
     {
         await _client.From<Subscription>()
             .Delete(new Subscription

@@ -39,6 +39,10 @@ public class TelegramController : Controller
             {
                 await Subscribe(update.Message);
             }
+            else if (update.Message.Text.StartsWith("/unsubscribe"))
+            {
+                await Unsubscribe(update.Message);
+            }
         }
 
         return Ok();
@@ -68,12 +72,38 @@ public class TelegramController : Controller
             }
     
             await _telegramBotClient.SendTextMessageAsync(message.Chat.Id,
-                "Subscription added successfully.");
+                "Subscribe successfully.");
         }
         else
         {
             await _telegramBotClient.SendTextMessageAsync(message.Chat.Id,
                 "Invalid command. Use /subscribe [board] [keyword]");
+        }
+    }
+
+    private async Task Unsubscribe(Message message)
+    {
+        var messageText = message.Text.Split(' ');
+        if (messageText.Length == 3 && messageText[0].ToLower() == "/unsubscribe")
+        {
+            var userId = message.Chat.Id;
+            var board = messageText[1];
+            var keyword = messageText[2];
+    
+            await _subscriptionRepository.Delete(userId, board, keyword);
+            var subscriptions = await _subscriptionRepository.GetAll();
+            if (subscriptions.All(subscription => subscription.Board != board))
+            {
+                await _subscribedBoardRepository.Delete(board);
+            }
+    
+            await _telegramBotClient.SendTextMessageAsync(message.Chat.Id,
+                "Unsubscribe successfully.");
+        }
+        else
+        {
+            await _telegramBotClient.SendTextMessageAsync(message.Chat.Id,
+                "Invalid command. Use /unsubscribe [board] [keyword]");
         }
     }
 }
