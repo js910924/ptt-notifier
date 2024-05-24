@@ -10,7 +10,7 @@ builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.Environment
     optional: true,
     reloadOnChange: true);
 
-builder.Services.AddHostedService<Worker>();
+builder.Services.AddHostedService<FetchLatestArticlesWorker>();
 builder.Services.AddHttpClient();
 
 var supabaseConfig = builder.Configuration.GetSection("SupabaseConfig").Get<SupabaseConfig>();

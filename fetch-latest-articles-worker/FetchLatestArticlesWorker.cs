@@ -3,14 +3,14 @@ using infrastructure;
 
 namespace fetch_latest_articles_worker;
 
-public class Worker : BackgroundService
+public class FetchLatestArticlesWorker : BackgroundService
 {
-    private readonly ILogger<Worker> _logger;
+    private readonly ILogger<FetchLatestArticlesWorker> _logger;
     private readonly FetchLatestArticlesService _fetchLatestArticlesService;
     private readonly ISubscribedBoardRepository _subscribedBoardRepository;
     private readonly IArticleRepository _articleRepository;
 
-    public Worker(ILogger<Worker> logger, FetchLatestArticlesService fetchLatestArticlesService, ISubscribedBoardRepository subscribedBoardRepository, IArticleRepository articleRepository)
+    public FetchLatestArticlesWorker(ILogger<FetchLatestArticlesWorker> logger, FetchLatestArticlesService fetchLatestArticlesService, ISubscribedBoardRepository subscribedBoardRepository, IArticleRepository articleRepository)
     {
         _logger = logger;
         _fetchLatestArticlesService = fetchLatestArticlesService;
