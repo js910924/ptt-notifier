@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Security;
 using domain.Models;
 using HtmlAgilityPack;
 
@@ -25,6 +26,7 @@ public class PttClient : IPttClient
         {
             var request = new HttpRequestMessage(HttpMethod.Get, url);
             request.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
+            request.Headers.Add("Cookie", "over18=1;");
 
             var response = await _httpClient.SendAsync(request);
             var responseContent = await response.Content.ReadAsStringAsync();
@@ -35,7 +37,7 @@ public class PttClient : IPttClient
 
             articles = articlesInPage.Where(article => article.Date >= startDate).Concat(articles).ToList();
 
-            if (articlesInPage.TrueForAll(a => a.Date >= startDate))
+            if (articlesInPage.Count != 0 && articlesInPage.TrueForAll(a => a.Date >= startDate))
             {
                 var nextPageButton = doc.DocumentNode.SelectSingleNode("//div[@class='btn-group btn-group-paging']/a[contains(text(), '上頁')]");
                 url = PttUrl + nextPageButton.GetAttributeValue("href", "");
@@ -61,9 +63,8 @@ public class PttClient : IPttClient
         var rListSep = rListContainer.SelectSingleNode(".//div[@class='r-list-sep']");
         
         var articlesInPage = new List<Article>();
-        // TODO: bypass 18+ validation
         var rows = rListContainer.SelectNodes(".//div[@class='r-ent']")
-            .Where(e => e.Line < rListSep.Line)
+            .Where(e => rListSep == null || e.Line < rListSep.Line)
             .ToList();
         foreach (var row in rows)
         {
