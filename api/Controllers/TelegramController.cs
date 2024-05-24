@@ -117,6 +117,7 @@ public class TelegramController : Controller
             if (subscriptions.All(subscription => subscription.Board != board))
             {
                 await _subscribedBoardRepository.Delete(board);
+                // TODO: also delete all board articles
             }
     
             await _telegramBotClient.SendTextMessageAsync(message.Chat.Id,
