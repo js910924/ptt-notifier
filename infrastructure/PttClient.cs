@@ -23,23 +23,13 @@ public class PttClient : IPttClient
 
         while (true)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, url);
-            request.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
-            request.Headers.Add("Cookie", "over18=1;");
-
-            var response = await _httpClient.SendAsync(request);
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var doc = new HtmlDocument();
-            doc.LoadHtml(responseContent);
-
-            var articlesInPage = GetArticlesInPage(doc, board);
+            var (previousPageUrl, articlesInPage) = await GetArticlesInPage2(board, url);
 
             articles = articlesInPage.Where(article => article.Date >= startDate).Concat(articles).ToList();
 
             if (articlesInPage.Count != 0 && articlesInPage.TrueForAll(a => a.Date >= startDate))
             {
-                var nextPageButton = doc.DocumentNode.SelectSingleNode("//div[@class='btn-group btn-group-paging']/a[contains(text(), '上頁')]");
-                url = PttUrl + nextPageButton.GetAttributeValue("href", "");
+                url = previousPageUrl;
             }
             else
             {
@@ -49,7 +39,24 @@ public class PttClient : IPttClient
 
         return articles;
     }
-    
+
+    private async Task<(string previousPageUrl, List<Article> articlesInPage)> GetArticlesInPage2(string board, string url)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
+        request.Headers.Add("Cookie", "over18=1;");
+
+        var response = await _httpClient.SendAsync(request);
+        var responseContent = await response.Content.ReadAsStringAsync();
+        var doc = new HtmlDocument();
+        doc.LoadHtml(responseContent);
+
+        var articlesInPage = GetArticlesInPage(doc, board);
+        var nextPageButton = doc.DocumentNode.SelectSingleNode("//div[@class='btn-group btn-group-paging']/a[contains(text(), '上頁')]");
+        var previousPageUrl = PttUrl + nextPageButton.GetAttributeValue("href", "");
+        return (previousPageUrl, articlesInPage);
+    }
+
     private static List<Article> GetArticlesInPage(HtmlDocument doc, string board)
     {
 
