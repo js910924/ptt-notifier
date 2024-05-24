@@ -60,4 +60,10 @@ public class PttPageHtmlDocument(HtmlDocument doc, string board)
         }
         return articlesInPage;
     }
+
+    public string GetPreviousPageUrl()
+    {
+        var nextPageButton = Doc.DocumentNode.SelectSingleNode("//div[@class='btn-group btn-group-paging']/a[contains(text(), '上頁')]");
+        return PttClient.PttUrl + nextPageButton.GetAttributeValue("href", "");
+    }
 }
