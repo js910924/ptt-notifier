@@ -34,12 +34,6 @@ public class FetchLatestArticlesWorker : BackgroundService
                 await _articleRepository.Add(latestArticles);
             }
 
-            // var subscriptions = await _subscriptionRepository.Get(subscribedBoard);
-            // foreach (var subscription in subscriptions)
-            // {
-            //     var targetArticles = latestArticles.Where(article => article.Title.Contains(subscription.Keyword, StringComparison.OrdinalIgnoreCase));
-            //     await _telegramBotClient.SendTextMessageAsync(subscription.UserId, string.Join('\n', targetArticles.Select(article => $"{article.Title}\n{article.Link}")), cancellationToken: stoppingToken);
-            // }
             await Task.Delay(5000, stoppingToken);
         }
     }

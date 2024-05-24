@@ -18,6 +18,7 @@ public class ArticleRepository : IArticleRepository
 
         return result.Models.Select(model => new domain.Models.Article
         {
+            Id = model.Id,
             Board = model.Board,
             Title = model.Title,
             Author = model.Author,
@@ -43,12 +44,10 @@ public class ArticleRepository : IArticleRepository
             .Insert(models);
     }
 
-    public async Task Delete(List<domain.Models.Article> articles)
+    public async Task Delete(long id)
     {
-        var models = articles.Select(article => article.Id);
-
         await _client.From<Article>()
-            .Where(x => models.Contains(x.Id))
+            .Where(x => x.Id == id)
             .Delete();
     }
 }

@@ -45,4 +45,18 @@ public class SubscriptionRepository : ISubscriptionRepository
                 Keyword = keyword
             });
     }
+
+    public async Task<List<domain.Models.Subscription>> Get(string board)
+    {
+        return (await _client.From<Subscription>()
+                .Where(subscription => subscription.Board == board)
+                .Get()).Models
+            .Select(subscription => new domain.Models.Subscription
+            {
+                UserId = subscription.UserId,
+                Board = subscription.Board,
+                Keyword = subscription.Keyword,
+            })
+            .ToList();
+    }
 }
