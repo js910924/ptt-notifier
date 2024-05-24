@@ -21,6 +21,7 @@ public class Article
 
     public static IEqualityComparer<Article> ArticleComparer { get; } = new ArticleEqualityComparer();
 
+    public long Id { get; set; }
     public string Title { get; set; }
     public string Link { get; set; }
     public DateTime Date { get; set; }

@@ -23,6 +23,7 @@ builder.Services.AddSupabase(supabaseConfig.Url, supabaseConfig.Key, new Supabas
 builder.Services.AddTransient<FetchLatestArticlesService>();
 builder.Services.AddTransient<ISubscribedBoardRepository, SubscribedBoardRepository>();
 builder.Services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
+builder.Services.AddTransient<IArticleRepository, ArticleRepository>();
 builder.Services.AddTransient<IPttClient, PttClient>();
 
 var host = builder.Build();
