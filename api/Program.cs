@@ -1,9 +1,7 @@
 using infrastructure;
 using infrastructure.Configs;
 using infrastructure.Extensions;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Supabase;
-using Telegram.Bot;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json",
@@ -23,11 +21,9 @@ builder.Services.AddSupabase(supabaseConfig.Url, supabaseConfig.Key, new Supabas
     AutoConnectRealtime = true,
     AutoRefreshToken = true,
 });
-builder.Services.AddSingleton<ITelegramBotClient>(_ =>
-{
-    var telegramConfig = builder.Configuration.GetSection("TelegramConfig").Get<TelegramConfig>();
-    return new TelegramBotClient(telegramConfig.Token);
-});
+
+var telegramConfig = builder.Configuration.GetSection("TelegramConfig").Get<TelegramConfig>();
+builder.Services.AddTelegramBotClient(telegramConfig.Token);
 
 // custom services
 builder.Services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
