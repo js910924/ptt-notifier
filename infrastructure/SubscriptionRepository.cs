@@ -59,4 +59,18 @@ public class SubscriptionRepository : ISubscriptionRepository
             })
             .ToList();
     }
+
+    public async Task<List<domain.Models.Subscription>> Get(long userId)
+    {
+        return (await _client.From<Subscription>()
+                .Where(subscription => subscription.UserId == userId)
+                .Get()).Models
+            .Select(subscription => new domain.Models.Subscription
+            {
+                UserId = subscription.UserId,
+                Board = subscription.Board,
+                Keyword = subscription.Keyword,
+            })
+            .ToList();
+    }
 }

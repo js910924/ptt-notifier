@@ -16,13 +16,15 @@ public class TelegramController : Controller
     private readonly ISubscribedBoardRepository _subscribedBoardRepository;
     private readonly ITelegramBotClient _telegramBotClient;
     private readonly IPttClient _pttClient;
+    private readonly ILogger<TelegramController> _logger;
 
-    public TelegramController(ISubscriptionRepository subscriptionRepository, ISubscribedBoardRepository subscribedBoardRepository, ITelegramBotClient telegramBotClient, IPttClient pttClient)
+    public TelegramController(ISubscriptionRepository subscriptionRepository, ISubscribedBoardRepository subscribedBoardRepository, ITelegramBotClient telegramBotClient, IPttClient pttClient, ILogger<TelegramController> logger)
     {
         _subscriptionRepository = subscriptionRepository;
         _subscribedBoardRepository = subscribedBoardRepository;
         _telegramBotClient = telegramBotClient;
         _pttClient = pttClient;
+        _logger = logger;
     }
 
     [HttpPost]
@@ -42,6 +44,10 @@ public class TelegramController : Controller
             else if (update.Message.Text.StartsWith("/unsubscribe"))
             {
                 await Unsubscribe(update.Message);
+            }
+            else if (update.Message.Text.Equals("/list", StringComparison.OrdinalIgnoreCase))
+            {
+                await ListSubscriptions(update.Message);
             }
         }
 
@@ -78,6 +84,22 @@ public class TelegramController : Controller
         {
             await _telegramBotClient.SendTextMessageAsync(message.Chat.Id,
                 "Invalid command. Use /subscribe [board] [keyword]");
+        }
+    }
+
+    private async Task ListSubscriptions(Message message)
+    {
+        try
+        {
+            var subscriptions = await _subscriptionRepository.Get(message.Chat.Id);
+            var text = string.Join('\n', subscriptions.Select(subscription => $"{subscription.Board} {subscription.Keyword}"));
+
+            await _telegramBotClient.SendTextMessageAsync(message.Chat.Id, text);
+        }
+        catch (Exception e)
+        {
+            await _telegramBotClient.SendTextMessageAsync(message.Chat.Id, "Unexpected error");
+            _logger.LogError(e, "List subscriptions failed");
         }
     }
 
