@@ -80,25 +80,6 @@ public class FetchLatestArticlesServiceTests
         }.SequenceEqual(articles, Article.ArticleComparer), Is.True);
     }
 
-    [Test]
-    public async Task get_all_today_articles_when_subscribed_board_last_latest_articles_title_is_null()
-    {
-        GivenArticles(
-            new Article { Board = "Stock", Title = "title 1" },
-            new Article { Board = "Stock", Title = "title 2" },
-            new Article { Board = "Stock", Title = "title 3" }
-        );
-
-        var articles = await _sut.Fetch(new SubscribedBoard { Board = "Stock", LastLatestArticleTitle = null });
-
-        Assert.That(new List<Article>
-        {
-            new() { Board = "Stock", Title = "title 1" },
-            new() { Board = "Stock", Title = "title 2" },
-            new() { Board = "Stock", Title = "title 3" },
-        }.SequenceEqual(articles, Article.ArticleComparer), Is.True);
-    }
-
     private void GivenArticles(params Article[] articles)
     {
         _pttClient.SearchPttArticlesAsync(Arg.Any<string>(), Arg.Any<int>()).Returns(articles.ToList());

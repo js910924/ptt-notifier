@@ -22,5 +22,5 @@ public class SubscribedBoard
     public static IEqualityComparer<SubscribedBoard> SubscribedBoardComparer { get; } = new SubscribedBoardEqualityComparer();
 
     public string Board { get; set; }
-    public string? LastLatestArticleTitle { get; set; }
+    public string LastLatestArticleTitle { get; set; }
 }

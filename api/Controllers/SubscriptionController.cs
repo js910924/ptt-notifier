@@ -16,12 +16,14 @@ public class SubscriptionController : Controller
     private readonly ISubscriptionRepository _subscriptionRepository;
     private readonly ISubscribedBoardRepository _subscribedBoardRepository;
     private readonly ITelegramBotClient _telegramBotClient;
+    private readonly IPttClient _pttClient;
 
-    public SubscriptionController(ISubscriptionRepository subscriptionRepository, ISubscribedBoardRepository subscribedBoardRepository, ITelegramBotClient telegramBotClient)
+    public SubscriptionController(ISubscriptionRepository subscriptionRepository, ISubscribedBoardRepository subscribedBoardRepository, ITelegramBotClient telegramBotClient, IPttClient pttClient)
     {
         _subscriptionRepository = subscriptionRepository;
         _subscribedBoardRepository = subscribedBoardRepository;
         _telegramBotClient = telegramBotClient;
+        _pttClient = pttClient;
     }
 
     [HttpPost]
@@ -31,7 +33,13 @@ public class SubscriptionController : Controller
         var subscribedBoards = await _subscribedBoardRepository.GetAll();
         if (!subscribedBoards.Exists(board => board.Board == request.Board))
         {
-            await _subscribedBoardRepository.Add(request.Board);
+            var latestArticle = await _pttClient.GetLatestArticle(request.Board);
+            var subscribedBoard = new SubscribedBoard
+            {
+                Board = request.Board,
+                LastLatestArticleTitle = latestArticle.Title
+            };
+            await _subscribedBoardRepository.Add(subscribedBoard);
         }
 
         return await _subscriptionRepository.GetAll();
@@ -72,7 +80,13 @@ public class SubscriptionController : Controller
                 var subscribedBoards = await _subscribedBoardRepository.GetAll();
                 if (!subscribedBoards.Exists(b => b.Board == board))
                 {
-                    await _subscribedBoardRepository.Add(board);
+                    var latestArticle = await _pttClient.GetLatestArticle(board);
+                    var subscribedBoard = new SubscribedBoard
+                    {
+                        Board = board,
+                        LastLatestArticleTitle = latestArticle.Title
+                    };
+                    await _subscribedBoardRepository.Add(subscribedBoard);
                 }
         
                 await _telegramBotClient.SendTextMessageAsync(update.Message.Chat.Id,

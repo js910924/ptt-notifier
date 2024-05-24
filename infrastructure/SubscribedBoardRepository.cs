@@ -22,12 +22,13 @@ namespace infrastructure
                 }).ToList();
         }
 
-        public async Task Add(string board)
+        public async Task Add(domain.Models.SubscribedBoard board)
         {
             _ = await _client.From<SubscribedBoard>()
                 .Upsert(new SubscribedBoard
                 {
-                    Board = board
+                    Board = board.Board,
+                    LastLatestArticleTitle = board.LastLatestArticleTitle,
                 });
         }
 

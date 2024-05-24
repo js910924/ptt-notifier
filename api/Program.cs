@@ -31,6 +31,7 @@ builder.Services.AddSingleton<ITelegramBotClient>(_ =>
 // custom services
 builder.Services.TryAddSingleton<ISubscriptionRepository, SubscriptionRepository>();
 builder.Services.TryAddSingleton<ISubscribedBoardRepository, SubscribedBoardRepository>();
+builder.Services.AddTransient<IPttClient, PttClient>();
 
 var app = builder.Build();
 

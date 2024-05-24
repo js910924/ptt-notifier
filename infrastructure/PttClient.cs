@@ -7,6 +7,7 @@ namespace infrastructure;
 public class PttClient : IPttClient
 {
     public const string PttUrl = "https://www.ptt.cc";
+    private static string GetPttBoardIndexUrl(string board) => $"{PttUrl}/bbs/{board}/index.html";
     private readonly HttpClient _httpClient;
 
     public PttClient(HttpClient httpClient)
@@ -17,7 +18,7 @@ public class PttClient : IPttClient
     public async Task<List<Article>> SearchPttArticlesAsync(string board, int days)
     {
         var startDate = DateTime.Today.AddDays(-days).Date;
-        var url = $"{PttUrl}/bbs/{board}/index.html";
+        var url = GetPttBoardIndexUrl(board);
 
         var articles = new List<Article>();
 
@@ -39,6 +40,14 @@ public class PttClient : IPttClient
         }
 
         return articles;
+    }
+
+    public async Task<Article> GetLatestArticle(string board)
+    {
+        var url = GetPttBoardIndexUrl(board);
+
+        var doc = await GetPttPageHtmlDocument(board, url);
+        return doc.GetArticlesInPage().Last();
     }
 
     private async Task<PttPageHtmlDocument> GetPttPageHtmlDocument(string board, string url)
