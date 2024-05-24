@@ -35,9 +35,9 @@ public class PttClient : IPttClient
 
             articles = articlesInPage.Where(article => article.Date >= startDate).Concat(articles).ToList();
 
-            var nextPageButton = doc.DocumentNode.SelectSingleNode("//div[@class='btn-group btn-group-paging']/a[contains(text(), '上頁')]");
-            if (nextPageButton != null && articlesInPage.TrueForAll(a => a.Date >= startDate))
+            if (articlesInPage.TrueForAll(a => a.Date >= startDate))
             {
+                var nextPageButton = doc.DocumentNode.SelectSingleNode("//div[@class='btn-group btn-group-paging']/a[contains(text(), '上頁')]");
                 url = PttUrl + nextPageButton.GetAttributeValue("href", "");
             }
             else
