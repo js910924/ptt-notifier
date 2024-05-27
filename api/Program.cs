@@ -1,3 +1,4 @@
+using api.Services;
 using infrastructure;
 using infrastructure.Configs;
 using infrastructure.Extensions;
@@ -29,6 +30,8 @@ builder.Services.AddTelegramBotClient(telegramConfig.Token);
 builder.Services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
 builder.Services.AddTransient<ISubscribedBoardRepository, SubscribedBoardRepository>();
 builder.Services.AddTransient<IPttClient, PttClient>();
+builder.Services.AddTransient<ITelegramMessageHandler, TelegramMessageHandler>();
+
 
 var app = builder.Build();
 

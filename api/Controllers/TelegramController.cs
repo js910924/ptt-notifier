@@ -1,8 +1,6 @@
-using domain.Models;
-using infrastructure;
+using api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
@@ -12,21 +10,11 @@ namespace api.Controllers;
 [Route("api/[controller]/[action]")]
 public class TelegramController : Controller
 {
-    private readonly ISubscriptionRepository _subscriptionRepository;
-    private readonly ISubscribedBoardRepository _subscribedBoardRepository;
-    private readonly ITelegramBotClient _telegramBotClient;
-    private readonly IPttClient _pttClient;
-    private readonly ILogger<TelegramController> _logger;
-    private readonly IArticleRepository _articleRepository;
+    private readonly ITelegramMessageHandler _telegramMessageHandler;
 
-    public TelegramController(ISubscriptionRepository subscriptionRepository, ISubscribedBoardRepository subscribedBoardRepository, ITelegramBotClient telegramBotClient, IPttClient pttClient, ILogger<TelegramController> logger, IArticleRepository articleRepository)
+    public TelegramController(ITelegramMessageHandler telegramMessageHandler)
     {
-        _subscriptionRepository = subscriptionRepository;
-        _subscribedBoardRepository = subscribedBoardRepository;
-        _telegramBotClient = telegramBotClient;
-        _pttClient = pttClient;
-        _logger = logger;
-        _articleRepository = articleRepository;
+        _telegramMessageHandler = telegramMessageHandler;
     }
 
     [HttpPost]
@@ -37,98 +25,11 @@ public class TelegramController : Controller
         var bodyAsString = await reader.ReadToEndAsync();
         var update = JsonConvert.DeserializeObject<Update>(bodyAsString);
 
-        if (update.Type == UpdateType.Message && update.Message.Type == MessageType.Text)
+        if (update is { Type: UpdateType.Message, Message: { Type: MessageType.Text, Text: not null } })
         {
-            if (update.Message.Text.StartsWith("/subscribe"))
-            {
-                await Subscribe(update.Message);
-            }
-            else if (update.Message.Text.StartsWith("/unsubscribe"))
-            {
-                await Unsubscribe(update.Message);
-            }
-            else if (update.Message.Text.Equals("/list", StringComparison.OrdinalIgnoreCase))
-            {
-                await ListSubscriptions(update.Message);
-            }
+            await _telegramMessageHandler.Handle(update.Message.Chat.Id, update.Message.Text);
         }
 
         return Ok();
-    }
-
-    private async Task Subscribe(Message message)
-    {
-        var messageText = message.Text.Split(' ');
-        if (messageText.Length == 3 && messageText[0].ToLower() == "/subscribe")
-        {
-            var userId = message.Chat.Id;
-            // TODO: validate is valid board 
-            var board = messageText[1];
-            var keyword = messageText[2];
-    
-            await _subscriptionRepository.Add(userId, board, keyword);
-            var subscribedBoards = await _subscribedBoardRepository.GetAll();
-            if (!subscribedBoards.Exists(b => b.Board == board))
-            {
-                var latestArticle = await _pttClient.GetLatestArticle(board);
-                var subscribedBoard = new SubscribedBoard
-                {
-                    Board = board,
-                    LastLatestArticleTitle = latestArticle.Title
-                };
-                await _subscribedBoardRepository.Add(subscribedBoard);
-            }
-    
-            await _telegramBotClient.SendTextMessageAsync(message.Chat.Id,
-                "Subscribe successfully.");
-        }
-        else
-        {
-            await _telegramBotClient.SendTextMessageAsync(message.Chat.Id,
-                "Invalid command. Use /subscribe [board] [keyword]");
-        }
-    }
-
-    private async Task ListSubscriptions(Message message)
-    {
-        try
-        {
-            var subscriptions = await _subscriptionRepository.Get(message.Chat.Id);
-            var text = string.Join('\n', subscriptions.Select(subscription => $"{subscription.Board} {subscription.Keyword}"));
-
-            await _telegramBotClient.SendTextMessageAsync(message.Chat.Id, text);
-        }
-        catch (Exception e)
-        {
-            await _telegramBotClient.SendTextMessageAsync(message.Chat.Id, "Unexpected error");
-            _logger.LogError(e, "List subscriptions failed");
-        }
-    }
-
-    private async Task Unsubscribe(Message message)
-    {
-        var messageText = message.Text.Split(' ');
-        if (messageText.Length == 3 && messageText[0].ToLower() == "/unsubscribe")
-        {
-            var userId = message.Chat.Id;
-            var board = messageText[1];
-            var keyword = messageText[2];
-    
-            await _subscriptionRepository.Delete(userId, board, keyword);
-            var subscriptions = await _subscriptionRepository.GetAll();
-            if (subscriptions.TrueForAll(subscription => subscription.Board != board))
-            {
-                await _subscribedBoardRepository.Delete(board);
-                await _articleRepository.Delete(board);
-            }
-    
-            await _telegramBotClient.SendTextMessageAsync(message.Chat.Id,
-                "Unsubscribe successfully.");
-        }
-        else
-        {
-            await _telegramBotClient.SendTextMessageAsync(message.Chat.Id,
-                "Invalid command. Use /unsubscribe [board] [keyword]");
-        }
     }
 }
