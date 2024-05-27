@@ -114,7 +114,7 @@ public class TelegramController : Controller
     
             await _subscriptionRepository.Delete(userId, board, keyword);
             var subscriptions = await _subscriptionRepository.GetAll();
-            if (subscriptions.All(subscription => subscription.Board != board))
+            if (subscriptions.TrueForAll(subscription => subscription.Board != board))
             {
                 await _subscribedBoardRepository.Delete(board);
                 // TODO: also delete all board articles
