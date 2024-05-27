@@ -30,7 +30,7 @@ public class SubscriptionRepository : ISubscriptionRepository
             .Upsert(new Subscription
             {
                 UserId = userId,
-                Board = board,
+                Board = board.ToLower(),
                 Keyword = keyword
             });
     }
@@ -41,7 +41,7 @@ public class SubscriptionRepository : ISubscriptionRepository
             .Delete(new Subscription
             {
                 UserId = userId,
-                Board = board,
+                Board = board.ToLower(),
                 Keyword = keyword
             });
     }

@@ -27,7 +27,7 @@ namespace infrastructure
             _ = await _client.From<SubscribedBoard>()
                 .Upsert(new SubscribedBoard
                 {
-                    Board = board.Board,
+                    Board = board.Board.ToLower(),
                     LastLatestArticleTitle = board.LastLatestArticleTitle,
                 });
         }
