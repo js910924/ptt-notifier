@@ -84,7 +84,6 @@ public class TelegramMessageHandler : ITelegramMessageHandler
         var messageText = message.Split(' ');
         if (messageText.Length == 3 && messageText[0].Equals("/subscribe", StringComparison.CurrentCultureIgnoreCase))
         {
-            // TODO: validate is valid board 
             var board = messageText[1];
             var keyword = messageText[2];
     
