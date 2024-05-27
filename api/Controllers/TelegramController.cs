@@ -17,14 +17,16 @@ public class TelegramController : Controller
     private readonly ITelegramBotClient _telegramBotClient;
     private readonly IPttClient _pttClient;
     private readonly ILogger<TelegramController> _logger;
+    private readonly IArticleRepository _articleRepository;
 
-    public TelegramController(ISubscriptionRepository subscriptionRepository, ISubscribedBoardRepository subscribedBoardRepository, ITelegramBotClient telegramBotClient, IPttClient pttClient, ILogger<TelegramController> logger)
+    public TelegramController(ISubscriptionRepository subscriptionRepository, ISubscribedBoardRepository subscribedBoardRepository, ITelegramBotClient telegramBotClient, IPttClient pttClient, ILogger<TelegramController> logger, IArticleRepository articleRepository)
     {
         _subscriptionRepository = subscriptionRepository;
         _subscribedBoardRepository = subscribedBoardRepository;
         _telegramBotClient = telegramBotClient;
         _pttClient = pttClient;
         _logger = logger;
+        _articleRepository = articleRepository;
     }
 
     [HttpPost]
@@ -117,7 +119,7 @@ public class TelegramController : Controller
             if (subscriptions.TrueForAll(subscription => subscription.Board != board))
             {
                 await _subscribedBoardRepository.Delete(board);
-                // TODO: also delete all board articles
+                await _articleRepository.Delete(board);
             }
     
             await _telegramBotClient.SendTextMessageAsync(message.Chat.Id,

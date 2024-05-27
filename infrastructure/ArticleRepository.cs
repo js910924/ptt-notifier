@@ -50,4 +50,11 @@ public class ArticleRepository : IArticleRepository
             .Where(x => x.Id == id)
             .Delete();
     }
+
+    public async Task Delete(string board)
+    {
+        await _client.From<Article>()
+            .Where(x => x.Board == board)
+            .Delete();
+    }
 }
