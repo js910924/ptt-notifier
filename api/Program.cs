@@ -29,6 +29,7 @@ builder.Services.AddTelegramBotClient(telegramConfig.Token);
 // custom services
 builder.Services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
 builder.Services.AddTransient<ISubscribedBoardRepository, SubscribedBoardRepository>();
+builder.Services.AddTransient<IArticleRepository, ArticleRepository>();
 builder.Services.AddTransient<IPttClient, PttClient>();
 builder.Services.AddTransient<ITelegramMessageHandler, TelegramMessageHandler>();
 
