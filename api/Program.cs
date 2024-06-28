@@ -1,3 +1,4 @@
+using api;
 using api.Services;
 using infrastructure;
 using infrastructure.Configs;
@@ -23,10 +24,12 @@ builder.Services.AddSupabase(supabaseConfig.Url, supabaseConfig.Key, new Supabas
     AutoRefreshToken = true,
 });
 
+builder.Services.Configure<TelegramConfig>(builder.Configuration.GetSection("TelegramConfig"));
 var telegramConfig = builder.Configuration.GetSection("TelegramConfig").Get<TelegramConfig>();
 builder.Services.AddTelegramBotClient(telegramConfig.Token);
 
 // custom services
+builder.Services.AddHostedService<SetTelegramWebhookHostedService>();
 builder.Services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
 builder.Services.AddTransient<ISubscribedBoardRepository, SubscribedBoardRepository>();
 builder.Services.AddTransient<IArticleRepository, ArticleRepository>();
