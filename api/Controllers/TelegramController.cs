@@ -8,15 +8,8 @@ namespace api.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-public class TelegramController : Controller
+public class TelegramController(ITelegramMessageHandler telegramMessageHandler) : Controller
 {
-    private readonly ITelegramMessageHandler _telegramMessageHandler;
-
-    public TelegramController(ITelegramMessageHandler telegramMessageHandler)
-    {
-        _telegramMessageHandler = telegramMessageHandler;
-    }
-
     [HttpPost]
     public async Task<IActionResult> Webhook()
     {
@@ -27,7 +20,7 @@ public class TelegramController : Controller
 
         if (update is { Type: UpdateType.Message, Message: { Type: MessageType.Text, Text: not null } })
         {
-            await _telegramMessageHandler.Handle(update.Message.Chat.Id, update.Message.Text);
+            await telegramMessageHandler.Handle(update.Message.Chat.Id, update.Message.Text);
         }
 
         return Ok();

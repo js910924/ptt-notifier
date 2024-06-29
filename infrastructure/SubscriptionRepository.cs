@@ -3,18 +3,11 @@ using Supabase;
 
 namespace infrastructure;
 
-public class SubscriptionRepository : ISubscriptionRepository
+public class SubscriptionRepository(Client client) : ISubscriptionRepository
 {
-    private readonly Client _client;
-
-    public SubscriptionRepository(Client client)
-    {
-        _client = client;
-    }
-
     public async Task<List<domain.Models.Subscription>> GetAll()
     {
-        var result = await _client.From<Subscription>().Get();
+        var result = await client.From<Subscription>().Get();
 
         return result.Models.Select(model => new domain.Models.Subscription
         {
@@ -26,7 +19,7 @@ public class SubscriptionRepository : ISubscriptionRepository
 
     public async Task Add(long userId, string board, string keyword)
     {
-        _ = await _client.From<Subscription>()
+        _ = await client.From<Subscription>()
             .Upsert(new Subscription
             {
                 UserId = userId,
@@ -37,7 +30,7 @@ public class SubscriptionRepository : ISubscriptionRepository
 
     public async Task Delete(long userId, string board, string keyword)
     {
-        await _client.From<Subscription>()
+        await client.From<Subscription>()
             .Delete(new Subscription
             {
                 UserId = userId,
@@ -48,7 +41,7 @@ public class SubscriptionRepository : ISubscriptionRepository
 
     public async Task<List<domain.Models.Subscription>> Get(string board)
     {
-        return (await _client.From<Subscription>()
+        return (await client.From<Subscription>()
                 .Where(subscription => subscription.Board == board)
                 .Get()).Models
             .Select(subscription => new domain.Models.Subscription
@@ -62,7 +55,7 @@ public class SubscriptionRepository : ISubscriptionRepository
 
     public async Task<List<domain.Models.Subscription>> Get(long userId)
     {
-        return (await _client.From<Subscription>()
+        return (await client.From<Subscription>()
                 .Where(subscription => subscription.UserId == userId)
                 .Get()).Models
             .Select(subscription => new domain.Models.Subscription

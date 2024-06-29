@@ -3,18 +3,11 @@ using Supabase;
 
 namespace infrastructure;
 
-public class ArticleRepository : IArticleRepository
+public class ArticleRepository(Client client) : IArticleRepository
 {
-    private readonly Client _client;
-
-    public ArticleRepository(Client client)
-    {
-        _client = client;
-    }
-
     public async Task<List<domain.Models.Article>> GetAll()
     {
-        var result = await _client.From<Article>().Get();
+        var result = await client.From<Article>().Get();
 
         return result.Models.Select(model => new domain.Models.Article
         {
@@ -40,20 +33,20 @@ public class ArticleRepository : IArticleRepository
             Author = article.Author,
         }).ToList();
 
-        _ = await _client.From<Article>()
+        _ = await client.From<Article>()
             .Insert(models);
     }
 
     public async Task Delete(long id)
     {
-        await _client.From<Article>()
+        await client.From<Article>()
             .Where(x => x.Id == id)
             .Delete();
     }
 
     public async Task Delete(string board)
     {
-        await _client.From<Article>()
+        await client.From<Article>()
             .Where(x => x.Board == board)
             .Delete();
     }
