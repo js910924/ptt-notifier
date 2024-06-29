@@ -4,5 +4,5 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
-api/appsettings.Development.json
-fetch-latest-articles-worker/appsettings.Development.json
+*.http
+appsettings.Development.json
