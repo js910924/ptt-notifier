@@ -34,8 +34,9 @@ public class TelegramMessageHandler(
         try
         {
             var subscriptions = await subscriptionRepository.Get(chatId);
-
-            return string.Join('\n', subscriptions.Select(subscription => $"{subscription.Board} {subscription.Keyword} {subscription.Author}"));
+            return subscriptions.Count != 0 ?
+                string.Join('\n', subscriptions.Select(subscription => $"{subscription.Board} {subscription.Keyword} {subscription.Author}"))
+                : "No Subscriptions";
         }
         catch (Exception e)
         {
