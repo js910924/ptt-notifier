@@ -11,4 +11,13 @@ public class SubscribedBoard : BaseModel
 
     [Column("last_latest_article_title")]
     public string LastLatestArticleTitle { get; set; }
+
+    public domain.Models.SubscribedBoard ToDomainModel()
+    {
+        return new domain.Models.SubscribedBoard
+        {
+            Board = Board,
+            LastLatestArticleTitle = LastLatestArticleTitle,
+        };
+    }
 }

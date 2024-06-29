@@ -23,4 +23,16 @@ public class Subscription : BaseModel
 
     [Column("author")]
     public string? Author { get; set; }
+
+    public domain.Models.Subscription ToDomainModel()
+    {
+        return new domain.Models.Subscription
+        {
+            Id = Id,
+            UserId = UserId,
+            Board = Board,
+            Keyword = Keyword,
+            Author = Author,
+        };
+    }
 }

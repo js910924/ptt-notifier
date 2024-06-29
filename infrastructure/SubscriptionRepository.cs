@@ -9,14 +9,7 @@ public class SubscriptionRepository(Client client) : ISubscriptionRepository
     {
         var result = await client.From<Subscription>().Get();
 
-        return result.Models.Select(model => new domain.Models.Subscription
-        {
-            Id = model.Id,
-            UserId = model.UserId,
-            Board = model.Board,
-            Keyword = model.Keyword,
-            Author = model.Author,
-        }).ToList();
+        return result.Models.Select(subscription => subscription.ToDomainModel()).ToList();
     }
 
     public async Task Add(long userId, string board, string keyword, string author)
@@ -55,14 +48,7 @@ public class SubscriptionRepository(Client client) : ISubscriptionRepository
         return (await client.From<Subscription>()
                 .Where(subscription => subscription.Board == board)
                 .Get()).Models
-            .Select(subscription => new domain.Models.Subscription
-            {
-                Id = subscription.Id,
-                UserId = subscription.UserId,
-                Board = subscription.Board,
-                Keyword = subscription.Keyword,
-                Author = subscription.Author,
-            })
+            .Select(subscription => subscription.ToDomainModel())
             .ToList();
     }
 
@@ -71,14 +57,7 @@ public class SubscriptionRepository(Client client) : ISubscriptionRepository
         return (await client.From<Subscription>()
                 .Where(subscription => subscription.UserId == userId)
                 .Get()).Models
-            .Select(subscription => new domain.Models.Subscription
-            {
-                Id = subscription.Id,
-                UserId = subscription.UserId,
-                Board = subscription.Board,
-                Keyword = subscription.Keyword,
-                Author = subscription.Author,
-            })
+            .Select(subscription => subscription.ToDomainModel())
             .ToList();
     }
 

@@ -8,11 +8,7 @@ namespace infrastructure
         public async Task<List<domain.Models.SubscribedBoard>> GetAll()
         {
             return (await client.From<SubscribedBoard>().Get()).Models
-                .Select(board => new domain.Models.SubscribedBoard
-                {
-                    Board = board.Board,
-                    LastLatestArticleTitle = board.LastLatestArticleTitle,
-                }).ToList();
+                .Select(board => board.ToDomainModel()).ToList();
         }
 
         public async Task<bool> IsExist(string board)
