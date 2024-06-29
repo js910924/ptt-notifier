@@ -9,6 +9,7 @@ public class FetchLatestArticlesWorker : BackgroundService
     private readonly FetchLatestArticlesService _fetchLatestArticlesService;
     private readonly ISubscribedBoardRepository _subscribedBoardRepository;
     private readonly IArticleRepository _articleRepository;
+    private const int MillisecondsDelay = 5000;
 
     public FetchLatestArticlesWorker(ILogger<FetchLatestArticlesWorker> logger, FetchLatestArticlesService fetchLatestArticlesService, ISubscribedBoardRepository subscribedBoardRepository, IArticleRepository articleRepository)
     {
@@ -34,7 +35,7 @@ public class FetchLatestArticlesWorker : BackgroundService
                 await _articleRepository.Add(latestArticles);
             }
 
-            await Task.Delay(5000, stoppingToken);
+            await Task.Delay(MillisecondsDelay, stoppingToken);
         }
     }
 }
