@@ -35,6 +35,7 @@ builder.Services.AddTransient<ISubscribedBoardRepository, SubscribedBoardReposit
 builder.Services.AddTransient<IArticleRepository, ArticleRepository>();
 builder.Services.AddTransient<IPttClient, PttClient>();
 builder.Services.AddTransient<ITelegramMessageHandler, TelegramMessageHandler>();
+builder.Services.AddTransient<ISubscriptionService, SubscriptionService>();
 
 
 var app = builder.Build();

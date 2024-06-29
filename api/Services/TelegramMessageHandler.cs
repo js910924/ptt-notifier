@@ -1,4 +1,3 @@
-using domain.Models;
 using infrastructure;
 using Telegram.Bot;
 
@@ -6,11 +5,9 @@ namespace api.Services;
 
 public class TelegramMessageHandler(
     ISubscriptionRepository subscriptionRepository,
-    ISubscribedBoardRepository subscribedBoardRepository,
-    IPttClient pttClient,
     ITelegramBotClient telegramBotClient,
-    IArticleRepository articleRepository,
-    ILogger<TelegramMessageHandler> logger)
+    ILogger<TelegramMessageHandler> logger,
+    ISubscriptionService subscriptionService)
     : ITelegramMessageHandler
 {
     public async Task Handle(long chatId, string message)
@@ -55,13 +52,7 @@ public class TelegramMessageHandler(
             var board = messageText[1];
             var keyword = messageText[2];
     
-            await subscriptionRepository.Delete(chatId, board, keyword);
-            var subscriptions = await subscriptionRepository.GetAll();
-            if (subscriptions.TrueForAll(subscription => subscription.Board != board))
-            {
-                await subscribedBoardRepository.Delete(board);
-                await articleRepository.Delete(board);
-            }
+            await subscriptionService.Unsubscribe(chatId, board, keyword);
 
             return "Unsubscribe successfully.";
         }
@@ -76,19 +67,8 @@ public class TelegramMessageHandler(
         {
             var board = messageText[1];
             var keyword = messageText[2];
-    
-            await subscriptionRepository.Add(chatId, board, keyword);
-            var subscribedBoards = await subscribedBoardRepository.GetAll();
-            if (!subscribedBoards.Exists(b => b.Board == board))
-            {
-                var latestArticle = await pttClient.GetLatestArticle(board);
-                var subscribedBoard = new SubscribedBoard
-                {
-                    Board = board,
-                    LastLatestArticleTitle = latestArticle.Title
-                };
-                await subscribedBoardRepository.Add(subscribedBoard);
-            }
+
+            await subscriptionService.Subscribe(chatId, board, keyword);
 
             return "Subscribe successfully.";
         }
