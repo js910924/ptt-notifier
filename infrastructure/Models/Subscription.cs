@@ -6,15 +6,21 @@ namespace infrastructure.Models;
 [Table("subscriptions")]
 public class Subscription : BaseModel
 {
-    [PrimaryKey("user_id")]
+    [PrimaryKey("id")]
+    public int Id { get; set; }
+
+    [Column("user_id")]
     public long UserId { get; set; }
 
-    [PrimaryKey("board")]
+    [Column("board")]
     public string Board { get; set; }
 
-    [PrimaryKey("keyword")]
-    public string Keyword { get; set; }
+    [Column("keyword")]
+    public string? Keyword { get; set; }
 
     [Column("created_at")]
     public DateTime CreatedAt { get; set; }
+
+    [Column("author")]
+    public string? Author { get; set; }
 }

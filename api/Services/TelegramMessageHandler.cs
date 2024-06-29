@@ -35,7 +35,7 @@ public class TelegramMessageHandler(
         {
             var subscriptions = await subscriptionRepository.Get(chatId);
 
-            return string.Join('\n', subscriptions.Select(subscription => $"{subscription.Board} {subscription.Keyword}"));
+            return string.Join('\n', subscriptions.Select(subscription => $"{subscription.Board} {subscription.Keyword} {subscription.Author}"));
         }
         catch (Exception e)
         {
@@ -47,32 +47,57 @@ public class TelegramMessageHandler(
     private async Task<string> Unsubscribe(long chatId, string message)
     {
         var messageText = message.Split(' ');
-        if (messageText.Length == 3 && messageText[0].Equals("/unsubscribe", StringComparison.CurrentCultureIgnoreCase))
+        if (messageText.Length == 4 && messageText[0].Equals("/unsubscribe", StringComparison.CurrentCultureIgnoreCase))
         {
-            var board = messageText[1];
-            var keyword = messageText[2];
+            var target = messageText[1];
+            var board = messageText[2];
+            var keyword = messageText[3];
     
-            await subscriptionService.Unsubscribe(chatId, board, keyword);
+            if (target.Equals("article", StringComparison.OrdinalIgnoreCase))
+            {
+                await subscriptionService.Unsubscribe(chatId, board, keyword);
+            }
+            else if (target.Equals("author", StringComparison.OrdinalIgnoreCase))
+            {
+                await subscriptionService.UnsubscribeAuthor(chatId, board, keyword);
+            }
+            else
+            {
+                return "Invalid command. Use /unsubscribe [target] [board] [keyword]";
+            }
+
 
             return "Unsubscribe successfully.";
         }
 
-        return "Invalid command. Use /unsubscribe [board] [keyword]";
+        return "Invalid command. Use /unsubscribe [target] [board] [keyword]";
     }
 
     private async Task<string> Subscribe(long chatId, string message)
     {
         var messageText = message.Split(' ');
-        if (messageText.Length == 3 && messageText[0].Equals("/subscribe", StringComparison.CurrentCultureIgnoreCase))
+        if (messageText.Length == 4 && messageText[0].Equals("/subscribe", StringComparison.CurrentCultureIgnoreCase))
         {
-            var board = messageText[1];
-            var keyword = messageText[2];
+            var target = messageText[1];
+            var board = messageText[2];
+            var keyword = messageText[3];
 
-            await subscriptionService.Subscribe(chatId, board, keyword);
+            if (target.Equals("article", StringComparison.OrdinalIgnoreCase))
+            {
+                await subscriptionService.Subscribe(chatId, board, keyword);
+            }
+            else if (target.Equals("author", StringComparison.OrdinalIgnoreCase))
+            {
+                await subscriptionService.SubscribeAuthor(chatId, board, keyword);
+            }
+            else
+            {
+                return "Invalid command. Use /subscribe [target] [board] [keyword]";
+            }
 
             return "Subscribe successfully.";
         }
 
-        return "Invalid command. Use /subscribe [board] [keyword]";
+        return "Invalid command. Use /subscribe [target] [board] [keyword]";
     }
 }

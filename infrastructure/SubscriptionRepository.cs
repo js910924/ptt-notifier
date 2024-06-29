@@ -14,28 +14,32 @@ public class SubscriptionRepository(Client client) : ISubscriptionRepository
             UserId = model.UserId,
             Board = model.Board,
             Keyword = model.Keyword,
+            Author = model.Author,
         }).ToList();
     }
 
-    public async Task Add(long userId, string board, string keyword)
+    public async Task Add(long userId, string board, string keyword, string author)
     {
         _ = await client.From<Subscription>()
-            .Upsert(new Subscription
+            .Insert(new Subscription
             {
                 UserId = userId,
                 Board = board.ToLower(),
-                Keyword = keyword
+                Keyword = keyword,
+                Author = author,
+                CreatedAt = DateTime.Now,
             });
     }
 
-    public async Task Delete(long userId, string board, string keyword)
+    public async Task Delete(long userId, string board, string keyword, string author)
     {
         await client.From<Subscription>()
             .Delete(new Subscription
             {
                 UserId = userId,
                 Board = board.ToLower(),
-                Keyword = keyword
+                Keyword = keyword,
+                Author = author,
             });
     }
 
@@ -49,6 +53,7 @@ public class SubscriptionRepository(Client client) : ISubscriptionRepository
                 UserId = subscription.UserId,
                 Board = subscription.Board,
                 Keyword = subscription.Keyword,
+                Author = subscription.Author,
             })
             .ToList();
     }
@@ -63,6 +68,7 @@ public class SubscriptionRepository(Client client) : ISubscriptionRepository
                 UserId = subscription.UserId,
                 Board = subscription.Board,
                 Keyword = subscription.Keyword,
+                Author = subscription.Author,
             })
             .ToList();
     }

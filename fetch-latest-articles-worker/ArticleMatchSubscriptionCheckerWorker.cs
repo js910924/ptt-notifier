@@ -1,4 +1,3 @@
-using fetch_latest_articles_worker.Services;
 using infrastructure;
 using Telegram.Bot;
 
@@ -12,7 +11,7 @@ public class ArticleMatchSubscriptionCheckerWorker : BackgroundService
     private readonly ITelegramBotClient _telegramBotClient;
     private const int MillisecondsDelay = 5000;
 
-    public ArticleMatchSubscriptionCheckerWorker(ILogger<ArticleMatchSubscriptionCheckerWorker> logger, FetchLatestArticlesService fetchLatestArticlesService, ISubscribedBoardRepository subscribedBoardRepository, IArticleRepository articleRepository, ISubscriptionRepository subscriptionRepository, ITelegramBotClient telegramBotClient)
+    public ArticleMatchSubscriptionCheckerWorker(ILogger<ArticleMatchSubscriptionCheckerWorker> logger, IArticleRepository articleRepository, ISubscriptionRepository subscriptionRepository, ITelegramBotClient telegramBotClient)
     {
         _logger = logger;
         _articleRepository = articleRepository;
@@ -38,7 +37,9 @@ public class ArticleMatchSubscriptionCheckerWorker : BackgroundService
                 foreach (var article in keyValuePair.Value)
                 {
                     var matchedSubscriptions = subscriptions
-                        .Where(subscription => article.Title.Contains(subscription.Keyword, StringComparison.OrdinalIgnoreCase));
+                        .Where(subscription =>
+                            subscription.Keyword is not null && article.Title.Contains(subscription.Keyword, StringComparison.OrdinalIgnoreCase)
+                            || subscription.Keyword is null && article.Author == subscription.Author);
                     var formatedArticle = string.Join('\n', $"{article.Title}\n{article.Link}");
                     var tasks = matchedSubscriptions.Select(subscription =>
                         _telegramBotClient.SendTextMessageAsync(subscription.UserId, formatedArticle, cancellationToken: stoppingToken));

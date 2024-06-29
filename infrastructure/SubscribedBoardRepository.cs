@@ -15,6 +15,12 @@ namespace infrastructure
                 }).ToList();
         }
 
+        public async Task<bool> IsExist(string board)
+        {
+            return (await client.From<SubscribedBoard>().Get()).Models
+                .Exists(subscribedBoard => subscribedBoard.Board.Equals(board.ToLower()));
+        }
+
         public async Task Add(domain.Models.SubscribedBoard board)
         {
             _ = await client.From<SubscribedBoard>()
