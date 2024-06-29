@@ -33,9 +33,8 @@ public class ArticleMatchSubscriptionCheckerWorker(
                         .Where(subscription =>
                             subscription.Keyword is not null && article.Title.Contains(subscription.Keyword, StringComparison.OrdinalIgnoreCase)
                             || subscription.Keyword is null && article.Author == subscription.Author);
-                    var formatedArticle = string.Join('\n', $"{article.Title}\n{article.Link}");
                     var tasks = matchedSubscriptions.Select(subscription =>
-                        telegramBotClient.SendTextMessageAsync(subscription.UserId, formatedArticle, cancellationToken: stoppingToken));
+                        telegramBotClient.SendTextMessageAsync(subscription.UserId, article.ToMessage(), cancellationToken: stoppingToken));
 
                     await Task.WhenAll(tasks);
                     await articleRepository.Delete(article.Id);

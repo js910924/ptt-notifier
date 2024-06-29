@@ -27,4 +27,9 @@ public class Article
     public DateTime Date { get; set; }
     public string Author { get; set; }
     public string Board { get; set; }
+
+    public string ToMessage()
+    {
+        return $"{Title} by {Author}\n{Link}";
+    }
 }
