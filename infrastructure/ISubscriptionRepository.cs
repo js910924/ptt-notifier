@@ -9,4 +9,5 @@ public interface ISubscriptionRepository
     Task Delete(long userId, string board, string keyword, string author);
     Task<List<Subscription>> Get(string board);
     Task<List<Subscription>> Get(long userId);
+    async Task<bool> IsBoardSubscribed(string board);
 }

@@ -41,8 +41,7 @@ public class SubscriptionService(
     public async Task Unsubscribe(long userId, string board, string keyword)
     {
         await subscriptionRepository.Delete(userId, board, keyword, null);
-        var subscriptions = await subscriptionRepository.GetAll();
-        if (subscriptions.All(subscription => subscription.Board != board))
+        if (!await subscriptionRepository.IsBoardSubscribed(board))
         {
             await subscribedBoardRepository.Delete(board);
         }
@@ -51,8 +50,7 @@ public class SubscriptionService(
     public async Task UnsubscribeAuthor(long userId, string board, string author)
     {
         await subscriptionRepository.Delete(userId, board, null, author);
-        var subscriptions = await subscriptionRepository.GetAll();
-        if (subscriptions.All(subscription => subscription.Board != board))
+        if (!await subscriptionRepository.IsBoardSubscribed(board))
         {
             await subscribedBoardRepository.Delete(board);
         }

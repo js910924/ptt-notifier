@@ -72,4 +72,10 @@ public class SubscriptionRepository(Client client) : ISubscriptionRepository
             })
             .ToList();
     }
+
+    public async Task<bool> IsBoardSubscribed(string board)
+    {
+        var subscriptions = await GetAll();
+        return subscriptions.Exists(subscription => subscription.Board == board);
+    }
 }
