@@ -11,6 +11,7 @@ public class SubscriptionRepository(Client client) : ISubscriptionRepository
 
         return result.Models.Select(model => new domain.Models.Subscription
         {
+            Id = model.Id,
             UserId = model.UserId,
             Board = model.Board,
             Keyword = model.Keyword,
@@ -33,14 +34,20 @@ public class SubscriptionRepository(Client client) : ISubscriptionRepository
 
     public async Task Delete(long userId, string board, string keyword, string author)
     {
+        var deletedSubscription = (await GetAll())
+            .SingleOrDefault(subscription =>
+                subscription.UserId == userId
+                && subscription.Board.Equals(board.ToLower())
+                && subscription.Keyword == keyword
+                && subscription.Author == author);
+        if (deletedSubscription is null)
+        {
+            return;
+        }
+
         await client.From<Subscription>()
-            .Delete(new Subscription
-            {
-                UserId = userId,
-                Board = board.ToLower(),
-                Keyword = keyword,
-                Author = author,
-            });
+            .Where(subscription => subscription.Id == deletedSubscription.Id)
+            .Delete();
     }
 
     public async Task<List<domain.Models.Subscription>> Get(string board)
@@ -50,6 +57,7 @@ public class SubscriptionRepository(Client client) : ISubscriptionRepository
                 .Get()).Models
             .Select(subscription => new domain.Models.Subscription
             {
+                Id = subscription.Id,
                 UserId = subscription.UserId,
                 Board = subscription.Board,
                 Keyword = subscription.Keyword,
@@ -65,6 +73,7 @@ public class SubscriptionRepository(Client client) : ISubscriptionRepository
                 .Get()).Models
             .Select(subscription => new domain.Models.Subscription
             {
+                Id = subscription.Id,
                 UserId = subscription.UserId,
                 Board = subscription.Board,
                 Keyword = subscription.Keyword,

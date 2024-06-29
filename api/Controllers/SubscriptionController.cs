@@ -22,10 +22,26 @@ public class SubscriptionController(
         return await subscriptionRepository.GetAll();
     }
 
+    [HttpPost]
+    public async Task<List<Subscription>> SubscribeAuthor(SubscribeRequest request)
+    {
+        await subscriptionService.SubscribeAuthor(request.UserId, request.Board, request.Keyword);
+
+        return await subscriptionRepository.GetAll();
+    }
+
     [HttpDelete]
     public async Task<OkResult> Unsubscribe(SubscribeRequest request)
     {
         await subscriptionService.Unsubscribe(request.UserId, request.Board, request.Keyword);
+
+        return Ok();
+    }
+
+    [HttpDelete]
+    public async Task<OkResult> UnsubscribeAuthor(SubscribeRequest request)
+    {
+        await subscriptionService.UnsubscribeAuthor(request.UserId, request.Board, request.Keyword);
 
         return Ok();
     }

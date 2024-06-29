@@ -21,6 +21,7 @@ public class Subscription
 
     public static IEqualityComparer<Subscription> UserIdBoardKeywordComparer { get; } = new UserIdBoardKeywordEqualityComparer();
 
+    public int Id { get; set; }
     public long UserId { get; set; }
     public string Board { get; set; }
     public string? Keyword { get; set; }
