@@ -14,6 +14,16 @@ public class SubscriptionRepository(Client client) : ISubscriptionRepository
 
     public async Task Add(long userId, string board, string keyword, string author)
     {
+        // TODO: search how to prevent duplicate insert in Supabase
+        if ((await GetAll()).Any(subscription =>
+                subscription.UserId == userId
+                && subscription.Board == board
+                && subscription.Keyword == keyword
+                && subscription.Author == author))
+        {
+            return;
+        }
+
         _ = await client.From<Subscription>()
             .Insert(new Subscription
             {
