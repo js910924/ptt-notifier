@@ -1,27 +1,17 @@
 using infrastructure.Configs;
 using Microsoft.Extensions.Options;
+using Telegram.Bot;
 
 namespace api;
 
-public class SetTelegramWebhookHostedService : IHostedService
+public class SetTelegramWebhookHostedService(IOptions<TelegramConfig> options, ITelegramBotClient telegramBotClient)
+    : IHostedService
 {
-    private readonly HttpClient _httpClient;
-    private readonly TelegramConfig _telegramConfig;
-
-    public SetTelegramWebhookHostedService(IHttpClientFactory httpClientFactory, IOptions<TelegramConfig> options)
-    {
-        var httpClient = httpClientFactory.CreateClient();
-        var telegramConfig = options.Value;
-
-        httpClient.BaseAddress = new Uri(telegramConfig.TelegramUrl);
-        _httpClient = httpClient;
-        _telegramConfig = telegramConfig;
-    }
+    private readonly TelegramConfig _telegramConfig = options.Value;
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        var setWebhookEndpoint = $"/bot{_telegramConfig.Token}/setwebhook?url={_telegramConfig.WebhookUrl}";
-        await _httpClient.GetAsync(setWebhookEndpoint, cancellationToken);
+        await telegramBotClient.SetWebhookAsync(_telegramConfig.WebhookUrl, cancellationToken: cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
