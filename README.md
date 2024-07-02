@@ -2,7 +2,7 @@
 
 ## How to use it 如何使用
 
-1. Download Telegram and add this bot 🤖 [PTT Notifier Bot](t.me/ptt_notifier_bot)
+1. Download Telegram and add this bot 🤖 [PTT Notifier Bot](https://t.me/ptt_notifier_bot)
 2. Subscribe to what interests you using the commands below
 3. Wait for notifications
 
