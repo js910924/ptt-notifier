@@ -33,7 +33,7 @@ public class TelegramMessageHandler(
     {
         var subscriptions = await subscriptionRepository.Get(chatId);
         return subscriptions.Count != 0 ?
-            string.Join('\n', subscriptions.Select(subscription => $"{subscription.Board} {subscription.Keyword} {subscription.Author}"))
+            string.Join('\n', subscriptions.Select(subscription => subscription.ToDisplayText()))
             : "No Subscriptions";
     }
 

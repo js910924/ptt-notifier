@@ -26,4 +26,14 @@ public class Subscription
     public string Board { get; set; }
     public string? Keyword { get; set; }
     public string? Author { get; set; }
+
+    public string ToDisplayText()
+    {
+        if (Author != null)
+        {
+            return $"{Board} Author: {Author}";
+        }
+
+        return $"{Board} Article: {Keyword}";
+    }
 }
