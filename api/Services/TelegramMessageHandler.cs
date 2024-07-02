@@ -31,18 +31,10 @@ public class TelegramMessageHandler(
 
     private async Task<string> ListSubscription(long chatId)
     {
-        try
-        {
-            var subscriptions = await subscriptionRepository.Get(chatId);
-            return subscriptions.Count != 0 ?
-                string.Join('\n', subscriptions.Select(subscription => $"{subscription.Board} {subscription.Keyword} {subscription.Author}"))
-                : "No Subscriptions";
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e, "List subscriptions failed");
-            return "Unexpected error";
-        }
+        var subscriptions = await subscriptionRepository.Get(chatId);
+        return subscriptions.Count != 0 ?
+            string.Join('\n', subscriptions.Select(subscription => $"{subscription.Board} {subscription.Keyword} {subscription.Author}"))
+            : "No Subscriptions";
     }
 
     private async Task<string> Unsubscribe(long chatId, string message)
