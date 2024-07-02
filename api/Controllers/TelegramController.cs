@@ -29,7 +29,7 @@ public class TelegramController(ITelegramMessageHandler telegramMessageHandler, 
         catch (Exception e)
         {
             logger.LogError(e, "Handle webhook failed");
-            await telegramBotClient.SendTextMessageAsync(update.Message!.Chat.Id, "Unexpected Error");
+            await telegramBotClient.SendTextMessageAsync(update.Message!.Chat.Id, "--- Invalid Command ---\n\n新增訂閱\n/subscribe [target] [board] [keyword]\n取消訂閱\n/unsubscribe [target] [board] [keyword]\n列出訂閱\n/list\n已支援 target: article, author");
         }
 
         return Ok();
