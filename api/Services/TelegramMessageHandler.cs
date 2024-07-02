@@ -1,3 +1,4 @@
+using api.Controllers;
 using infrastructure;
 using Telegram.Bot;
 
@@ -23,6 +24,10 @@ public class TelegramMessageHandler(
         else if (message.Equals("/list", StringComparison.OrdinalIgnoreCase))
         {
             replyText = await ListSubscription(chatId);
+        }
+        else if (message.Equals("/help", StringComparison.OrdinalIgnoreCase))
+        {
+            replyText = TelegramController.HelpMessage;
         }
 
         await telegramBotClient.SendTextMessageAsync(chatId, replyText);
