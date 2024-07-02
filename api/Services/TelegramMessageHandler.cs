@@ -6,7 +6,6 @@ namespace api.Services;
 public class TelegramMessageHandler(
     ISubscriptionRepository subscriptionRepository,
     ITelegramBotClient telegramBotClient,
-    ILogger<TelegramMessageHandler> logger,
     ISubscriptionService subscriptionService)
     : ITelegramMessageHandler
 {
