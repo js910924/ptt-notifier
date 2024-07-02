@@ -6,4 +6,5 @@ public interface IPttClient
 {
     Task<List<Article>> SearchPttArticlesAsync(string board, int days);
     Task<Article> GetLatestArticle(string board);
+    Task<bool> IsBoardExist(string board);
 }

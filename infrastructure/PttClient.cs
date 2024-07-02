@@ -1,3 +1,4 @@
+using System.Net;
 using HtmlAgilityPack;
 using infrastructure.Models;
 using Article = domain.Models.Article;
@@ -8,6 +9,12 @@ public class PttClient(HttpClient httpClient) : IPttClient
 {
     public const string PttUrl = "https://www.ptt.cc";
     private static string GetPttBoardIndexUrl(string board) => $"{PttUrl}/bbs/{board}/index.html";
+
+    public async Task<bool> IsBoardExist(string board)
+    {
+        var httpResponseMessage = await httpClient.GetAsync(GetPttBoardIndexUrl(board));
+        return httpResponseMessage.IsSuccessStatusCode;
+    }
 
     public async Task<List<Article>> SearchPttArticlesAsync(string board, int days)
     {
